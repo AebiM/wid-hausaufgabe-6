@@ -18,13 +18,23 @@ function App() {
   const [Methode, setMethode] = useState("");
   const [Northing, setNorthing] = useState("");
   const [Easting, setEasting] = useState("");
+  const [Koord, setKoord] = useState([]);
 
   const URL = `http://geodesy.geo.admin.ch/reframe/${
     Methode !== "" ? Methode : ""
   }?easting=${Easting !== "" ? Easting : ""}&northing=${
     Northing !== "" ? Northing : ""
   }`;
-  console.log(URL);
+  // console.log(URL);
+
+  async function fetchKoord() {
+    // console.log("Clicked");
+    const resp = await fetch(URL);
+    const data = await resp.json();
+    setKoord(data);
+    // console.log(Koord);
+  }
+
   return (
     <>
       <Typography variant="h1">Koordinatentransformation</Typography>
@@ -67,9 +77,15 @@ function App() {
         </Select>
       </FormControl>
 
-      <Button variant="contained" color="primary" style={{ marginBottom: 10 }}>
+      <Button
+        variant="contained"
+        color="primary"
+        style={{ marginBottom: 10 }}
+        onClick={() => fetchKoord()}
+      >
         Transformieren
       </Button>
+      <p>{Koord.length > 0 && JSON.stringify(Koord)}</p>
 
       <TextField
         id="x"
