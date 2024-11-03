@@ -9,30 +9,30 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 
-// const URLbeispiel =
-//   "http://geodesy.geo.admin.ch/reframe/wgs84tolv95?easting=7.43863&northing=46.95108&altitude=550.0&format=json";
-
-// const URLroh = "http://geodesy.geo.admin.ch/reframe/";
-
 function App() {
   const [Methode, setMethode] = useState("");
   const [Northing, setNorthing] = useState("");
   const [Easting, setEasting] = useState("");
-  const [Koord, setKoord] = useState([]);
+
+  const [X, setX] = useState("");
+  const [Y, setY] = useState("");
 
   const URL = `http://geodesy.geo.admin.ch/reframe/${
     Methode !== "" ? Methode : ""
   }?easting=${Easting !== "" ? Easting : ""}&northing=${
     Northing !== "" ? Northing : ""
   }`;
-  // console.log(URL);
 
   async function fetchKoord() {
-    // console.log("Clicked");
-    const resp = await fetch(URL);
-    const data = await resp.json();
-    setKoord(data);
-    // console.log(Koord);
+    try {
+      const resp = await fetch(URL);
+      const data = await resp.json();
+
+      setX(data.coordinates[0]);
+      setY(data.coordinates[1]);
+    } catch (error) {
+      console.error("Error fetching coordinates:", error);
+    }
   }
 
   return (
@@ -81,23 +81,31 @@ function App() {
         variant="contained"
         color="primary"
         style={{ marginBottom: 10 }}
-        onClick={() => fetchKoord()}
+        onClick={fetchKoord}
       >
         Transformieren
       </Button>
-      <p>{Koord.length > 0 && JSON.stringify(Koord)}</p>
 
       <TextField
         id="x"
         label="Transformed X"
         variant="outlined"
+        value={X}
         style={{ marginBottom: 10 }}
+        InputProps={{
+          readOnly: true,
+        }}
       />
+
       <TextField
         id="y"
         label="Transformed Y"
         variant="outlined"
+        value={Y}
         style={{ marginBottom: 10 }}
+        InputProps={{
+          readOnly: true,
+        }}
       />
     </>
   );
